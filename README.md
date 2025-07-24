@@ -1,25 +1,16 @@
-# mib2template_yaml_generic.py
-genera plantillas YAML para Zabbix 6.0+ a partir de cualquier archivo MIB válido.
-📄 Generar Plantillas Zabbix (YAML) desde Archivos MIB (Versión Genérica) 
+### `README.md` para `mib2template_yaml_generic.py`
 
-Este script genera una plantilla base  de Zabbix en formato YAML  (compatible con Zabbix 6.0+) a partir de cualquier archivo MIB válido . Es completamente agnóstico de la marca  del dispositivo. 
+#### 📄 Generar Plantillas Zabbix (YAML) desde Archivos MIB (Versión Genérica)
 
-Es una herramienta para automatizar la creación inicial  de plantillas SNMP, proporcionando una estructura sólida que luego debe ser revisada y enriquecida manualmente  con triggers, gráficos y otros elementos específicos del caso de uso. 
-🛠 Requisitos Previos 
+Este script genera una **plantilla base** de Zabbix en **formato YAML** (compatible con Zabbix 6.0+) a partir de **cualquier archivo MIB válido**. Es completamente **agnóstico de la marca** del dispositivo.
 
-    Python 3.6+ 
-    Herramientas Net-SNMP  (snmptranslate, snmpget, etc.)
-    bash
-     
+Es una herramienta para **automatizar la creación inicial** de plantillas SNMP, proporcionando una estructura sólida que luego **debe ser revisada y enriquecida manualmente** con triggers, gráficos y otros elementos específicos del caso de uso.
 
-     
-    1
-    2
-    3
-    4
-    5
-    6
-    7
+##### 🛠 Requisitos Previos
+
+*   **Python 3.6+**
+*   **Herramientas Net-SNMP** (`snmptranslate`, `snmpget`, etc.)
+    ```bash
     # Debian/Ubuntu
     sudo apt update && sudo apt install snmp snmp-mibs-downloader
 
@@ -27,62 +18,30 @@ Es una herramienta para automatizar la creación inicial  de plantillas SNMP, pr
     sudo yum install net-snmp net-snmp-utils
     # o en sistemas con dnf
     sudo dnf install net-snmp net-snmp-utils
-     
-     
-    Biblioteca PyYAML : pip install pyyaml
-    (Opcional) Biblioteca pysmi  (para mejor extracción de enums): pip install pysmi
-     
+    ```
+*   **Biblioteca PyYAML**: `pip install pyyaml`
+*   **(Opcional) Biblioteca pysmi** (para mejor extracción de enums): `pip install pysmi`
 
-bash
- 
- 
-1
-2
-3
-4
+```bash
 # Instalación de dependencias de Python
 pip3 install pyyaml
 # Opcional, pero recomendado para mejor soporte de enums
 pip3 install pysmi
- 
- 
-📥 Descargar y Usar 
-bash
- 
- 
-1
-2
-3
-4
-5
+```
+
+##### 📥 Descargar y Usar
+
+```bash
 # Descargar el script
 wget -O mib2template_yaml_generic.py https://raw.githubusercontent.com/tu-repo/mib2template_yaml_generic.py
 
 # Hacerlo ejecutable (opcional)
 chmod +x mib2template_yaml_generic.py
- 
- 
-🎯 Ejemplos de Uso 
-bash
- 
- 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
+```
+
+##### 🎯 Ejemplos de Uso
+
+```bash
 # Generar template básico para un MIB estándar
 python3 mib2template_yaml_generic.py -f /usr/share/snmp/mibs/SNMPv2-MIB.txt -m SNMPv2-MIB
 
@@ -100,44 +59,11 @@ python3 mib2template_yaml_generic.py \
   --check-delay 5m \
   --disc-delay 30m \
   --history 7d
- 
- 
-📋 Parámetros Disponibles 
-bash
- 
- 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
+```
+
+##### 📋 Parámetros Disponibles
+
+```bash
 usage: mib2template_yaml_generic.py [-h] -f MIB_FILE -m MODULE [-o OUTPUT]
                                     [-N TEMPLATE_NAME] [-G GROUP]
                                     [--check-delay CHECK_DELAY]
@@ -170,48 +96,44 @@ optional arguments:
 Ejemplos:
   mib2template_yaml_generic.py -f /usr/share/snmp/mibs/SNMPv2-MIB.txt -m SNMPv2-MIB
   mib2template_yaml_generic.py -f ./CUSTOM-MIB.mib -m CUSTOM-MIB -N "Mi Template Custom" -o custom_template.yaml
- 
- 
-🔍 ¿Qué hace el script? 
+```
 
-    Carga el MIB : Utiliza snmptranslate para verificar que el archivo MIB es válido y puede ser cargado.
-    Lista los Símbolos : Obtiene una lista de todos los objetos (símbolos) definidos en el MIB.
-    Procesa cada Símbolo :
-        Obtiene el OID numérico .
-        Obtiene el nombre completo  (ej., SNMPv2-MIB::sysDescr.0).
-        Obtiene la descripción  del objeto.
-        Determina el tipo de dato  SNMP y lo mapea a un tipo Zabbix (FLOAT, CHAR, TEXT).
-        Intenta extraer unidades  (ej., segundos, bytes) del tipo o descripción.
-        Determina si el objeto es un item escalar  o una columna de tabla .
-        Intenta extraer definiciones de enums  (mapeos de valores como up(1) -> 1) para crear valuemaps.
-         
-    Construye la Estructura del Template :
-        Crea una plantilla con nombre y grupo especificados.
-        Añade todos los items escalares  encontrados.
-        Agrupa las columnas de tabla  por su tabla padre y crea reglas de descubrimiento  (discovery_rules) con sus item_prototypes.
-        Incluye los valuemaps  generados a partir de los enums.
-        Crea secciones vacías para graphs, triggers y dashboards que puedes completar manualmente.
-         
-    Genera el Archivo YAML : Guarda la estructura en un archivo YAML legible y compatible con Zabbix 6.0+.
-     
+##### 🔍 ¿Qué hace el script?
 
-⚠️ Notas Importantes 
+1.  **Carga el MIB**: Utiliza `snmptranslate` para verificar que el archivo MIB es válido y puede ser cargado.
+2.  **Lista los Símbolos**: Obtiene una lista de todos los objetos (símbolos) definidos en el MIB.
+3.  **Procesa cada Símbolo**:
+    *   Obtiene el **OID numérico**.
+    *   Obtiene el **nombre completo** (ej., `SNMPv2-MIB::sysDescr.0`).
+    *   Obtiene la **descripción** del objeto.
+    *   Determina el **tipo de dato** SNMP y lo mapea a un tipo Zabbix (`FLOAT`, `CHAR`, `TEXT`).
+    *   Intenta extraer **unidades** (ej., segundos, bytes) del tipo o descripción.
+    *   Determina si el objeto es un **item escalar** o una **columna de tabla**.
+    *   Intenta extraer definiciones de **enums** (mapeos de valores como `up(1)` -> `1`) para crear `valuemaps`.
+4.  **Construye la Estructura del Template**:
+    *   Crea una plantilla con nombre y grupo especificados.
+    *   Añade todos los **items escalares** encontrados.
+    *   Agrupa las **columnas de tabla** por su tabla padre y crea **reglas de descubrimiento** (`discovery_rules`) con sus `item_prototypes`.
+    *   Incluye los **`valuemaps`** generados a partir de los enums.
+    *   Crea secciones vacías para `graphs`, `triggers` y `dashboards` que puedes completar manualmente.
+5.  **Genera el Archivo YAML**: Guarda la estructura en un archivo YAML legible y compatible con Zabbix 6.0+.
 
-    Base Inicial : El template generado es una base . No es un template final listo para usar . Requiere revisión y personalización.
-    Items Deshabilitados : Por defecto, los items se crean sin un estado ENABLED, lo que significa que estarán deshabilitados en Zabbix. Esto es una medida de seguridad para evitar sobrecargar el servidor.
-    Sin Triggers/Graphs Automáticos : El script no genera triggers, gráficos o dashboards  automáticamente. Esta lógica es específica del dispositivo y del entorno de monitoreo.
-    Detección de Tablas : La detección de estructuras de tabla se basa en heurísticas simples (OIDs que terminan en .1.x, nombres con Table). Puede no ser perfecta para todos los MIBs.
-    Extracción de Enums : La extracción de enums es limitada con snmptranslate. Si instalas pysmi, el script intentará usarlo para una mejor extracción, aunque la implementación completa de esta característica en el script es básica.
-    MIBs y Dependencias : Asegúrate de que el MIB y todas sus dependencias (otros MIBs que importa) están disponibles para snmptranslate. Puedes usar variables de entorno como MIBDIRS o la opción -M de snmptranslate si es necesario.
-     
+##### ⚠️ Notas Importantes
 
-📤 Importar Template a Zabbix 
+1.  **Base Inicial**: El template generado es una **base**. **No es un template final listo para usar**. Requiere revisión y personalización.
+2.  **Items Deshabilitados**: Por defecto, los items se crean sin un estado `ENABLED`, lo que significa que estarán deshabilitados en Zabbix. Esto es una medida de seguridad para evitar sobrecargar el servidor.
+3.  **Sin Triggers/Graphs Automáticos**: El script **no genera triggers, gráficos o dashboards** automáticamente. Esta lógica es específica del dispositivo y del entorno de monitoreo.
+4.  **Detección de Tablas**: La detección de estructuras de tabla se basa en heurísticas simples (OIDs que terminan en `.1.x`, nombres con `Table`). Puede no ser perfecta para todos los MIBs.
+5.  **Extracción de Enums**: La extracción de enums es limitada con `snmptranslate`. Si instalas `pysmi`, el script intentará usarlo para una mejor extracción, aunque la implementación completa de esta característica en el script es básica.
+6.  **MIBs y Dependencias**: Asegúrate de que el MIB y todas sus dependencias (otros MIBs que importa) están disponibles para `snmptranslate`. Puedes usar variables de entorno como `MIBDIRS` o la opción `-M` de `snmptranslate` si es necesario.
 
-    Accede a la interfaz web de Zabbix.
-    Ve a Data collection  → Templates .
-    Haz clic en Import .
-    Selecciona el archivo template.yaml generado.
-    Revisa cuidadosamente  los items, discovery rules y valuemap generados.
-    Agrega manualmente triggers, graphs, dashboards  según tus necesidades de monitoreo.
-    Habilita los items y reglas de descubrimiento que desees usar.
-    Guarda la plantilla.
+##### 📤 Importar Template a Zabbix
+
+1.  Accede a la interfaz web de Zabbix.
+2.  Ve a **Data collection** → **Templates**.
+3.  Haz clic en **Import**.
+4.  Selecciona el archivo `template.yaml` generado.
+5.  **Revisa cuidadosamente** los items, discovery rules y valuemap generados.
+6.  **Agrega manualmente triggers, graphs, dashboards** según tus necesidades de monitoreo.
+7.  Habilita los items y reglas de descubrimiento que desees usar.
+8.  Guarda la plantilla.
